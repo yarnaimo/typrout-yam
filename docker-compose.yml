@@ -89,5 +89,7 @@ services:
 
 networks:
   external_network:
+    external:
+      name: external_network
   internal_network:
     internal: true
