@@ -1,24 +1,6 @@
 version: '3'
 services:
 
-  nginx:
-    image: nginx:1.13-alpine
-    container_name: typrout-nginx
-    ports:
-      - "9090:9090"
-    restart: always
-    tty: false
-    env_file: .env.production
-    links:
-      - web
-      - streaming
-    volumes:
-      - certs:/etc/nginx/certs:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-    networks:
-      - internal_network
-      - nginx-proxy
-
   db:
     container_name: typrout-db
     restart: always
@@ -54,9 +36,13 @@ services:
     image: tootsuite/mastodon
     restart: always
     env_file: .env.production
+    environment:
+      VIRTUAL_HOST: typrout.ml
+      VIRTUAL_PORT: 3000
     command: bundle exec rails s -p 3000 -b '0.0.0.0'
     networks:
       - internal_network
+      - nginx-proxy
     ports:
       - "3000:3000"
     depends_on:
@@ -74,9 +60,13 @@ services:
     image: tootsuite/mastodon
     restart: always
     env_file: .env.production
+    environment:
+      VIRTUAL_HOST: streaming.typrout.ml
+      VIRTUAL_PORT: 4000
     command: yarn start
     networks:
       - internal_network
+      - nginx-proxy
     ports:
       - "4000:4000"
     depends_on:
@@ -98,10 +88,6 @@ services:
     volumes:
       - ./public/packs:/mastodon/public/packs
       - ./public/system:/mastodon/public/system
-
-volumes:
-  certs:
-    external: true
 
 networks:
   nginx-proxy:
