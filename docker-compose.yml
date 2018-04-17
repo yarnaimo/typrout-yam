@@ -13,12 +13,11 @@ services:
       - web
       - streaming
     volumes:
-      - /etc/nginx/certs:/etc/nginx/certs:ro
+      - certs:/etc/nginx/certs:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/conf:/etc/nginx/conf/:ro
     networks:
       - internal_network
-      - external_network
+      - nginx-proxy
 
   db:
     container_name: typrout-db
@@ -100,9 +99,12 @@ services:
       - ./public/packs:/mastodon/public/packs
       - ./public/system:/mastodon/public/system
 
+volumes:
+  certs:
+    external: true
+
 networks:
-  external_network:
-    external:
-      name: external_network
+  nginx-proxy:
+    external: true
   internal_network:
     internal: true
