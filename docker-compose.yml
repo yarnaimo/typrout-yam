@@ -83,6 +83,7 @@ services:
       - redis
     networks:
       - internal_network
+      - nginx-proxy
     volumes:
       - ./public/system:/mastodon/public/system
 ## Uncomment to enable federation with tor instances along with adding the following ENV variables
